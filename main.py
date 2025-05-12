@@ -1,16 +1,20 @@
 from app.core.application import get_application
-from pprint import pprint
+
+from app.services.os_builder_service import OSBuildConfig
 
 
 def main():
     app = get_application()
 
-    container = app.docker_service.run_container(
-        image="nginx:latest",
-        ports={"80/tcp": 8080},
+    app.os_builder.build_os(
+        OSBuildConfig(
+            name="my_custom_os",
+            distro="ubuntu",
+            release="latest",
+            architecture="amd64",
+            packages=["neofetch", "btop"],
+        )
     )
-
-    logs = app.docker_service.get_logs(container.id)
 
 
 if __name__ == "__main__":

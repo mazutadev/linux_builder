@@ -13,6 +13,8 @@ from app.core.base.commander import CommandExecutor
 
 # Imports from services modules
 from app.services.docker_service import DockerService
+from app.services.container_manager import ContainerManagerService
+from app.services.os_builder_service import OSBuilderService
 
 
 def _load_config_to_container(container: Container):
@@ -98,6 +100,14 @@ class Application:
         self._docker_service = self._container.docker_service()
         self.__inner_logger.debug("Docker service initialized")
 
+        # Initialize Container manager
+        self._container_manager = self._container.container_manager()
+        self.__inner_logger.debug("Container manager initialized")
+
+        # Initialize OS builder
+        self._os_builder = self._container.os_builder()
+        self.__inner_logger.debug("OS builder initialized")
+
         # Set initialized flag
         self._initialized = True
         self.__inner_logger.debug("CoreApplication initialized")
@@ -121,3 +131,11 @@ class Application:
     @property
     def docker_service(self) -> DockerService:
         return self._docker_service
+
+    @property
+    def container_manager(self) -> ContainerManagerService:
+        return self._container_manager
+
+    @property
+    def os_builder(self) -> OSBuilderService:
+        return self._os_builder

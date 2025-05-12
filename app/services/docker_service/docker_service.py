@@ -6,7 +6,7 @@ Module for working with Docker.
 
 import docker
 import logging
-from typing import List
+from typing import List, Optional
 
 import docker.errors
 
@@ -59,7 +59,7 @@ class DockerService:
             self._logger.info(
                 "Running container (image=%s, command=%s)", image, command
             )
-            return self._client.containers.run(image, command, detach=True, **kwargs)
+            return self._client.containers.run(image, command, **kwargs)
         except docker.errors.DockerException as e:
             self._logger.error("Error running container: %s", e)
             raise e
@@ -132,3 +132,22 @@ class DockerService:
         except docker.errors.DockerException as e:
             self._logger.error("Error building image: %s", e)
             raise e
+
+    def get_container(self, name: str) -> Optional[docker.models.containers.Container]:
+        """
+        Get a container by name.
+        """
+        try:
+            return self._client.containers.get(name)
+        except docker.errors.DockerException:
+            return None
+
+    def container_exists(self, name: str) -> bool:
+        """
+        Check if a container with the given name exists.
+        """
+        try:
+            self._client.containers.get(name)
+            return True
+        except docker.errors.DockerException:
+            return False

@@ -20,6 +20,8 @@ if TYPE_CHECKING:
 
     # Imports from services modules
     from app.services.docker_service import DockerService
+    from app.services.container_manager import ContainerManagerService
+    from app.services.os_builder_service import OSBuilderService
 
 
 def _find_project_root() -> str:
@@ -108,6 +110,40 @@ def _init_docker_service(
     )
 
 
+def _init_container_manager(
+    logger: providers.Singleton,
+    docker_service: providers.Singleton,
+) -> "ContainerManagerService":
+    """
+    Initialize container manager.
+    """
+
+    from app.services.container_manager import ContainerManagerService
+
+    return providers.Singleton(
+        ContainerManagerService,
+        logger=logger,
+        docker_service=docker_service,
+    )
+
+
+def _init_os_builder(
+    logger: providers.Singleton,
+    container_manager: providers.Singleton,
+) -> "OSBuilderService":
+    """
+    Initialize OS builder.
+    """
+
+    from app.services.os_builder_service import OSBuilderService
+
+    return providers.Singleton(
+        OSBuilderService,
+        logger=logger,
+        container_manager=container_manager,
+    )
+
+
 # Container
 class Container(containers.DeclarativeContainer):
     """
@@ -129,3 +165,9 @@ class Container(containers.DeclarativeContainer):
 
     # Docker service
     docker_service = _init_docker_service(config, logger)
+
+    # Container manager
+    container_manager = _init_container_manager(logger, docker_service)
+
+    # OS builder
+    os_builder = _init_os_builder(logger, container_manager)
