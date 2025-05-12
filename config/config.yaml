@@ -1,0 +1,26 @@
+app:
+  name: "Linux Builder"
+  version: "0.1.0"
+  description: "Build Linux custom images"
+
+logging:
+  level: "DEBUG"
+  handlers:
+    - console
+    - file
+  file_config:
+    path: logs/
+    name: app.log
+    max_bytes: 10485760
+    backup_count: 5
+  format: "[%(asctime)s] %(levelname)s %(name)s: %(message)s"
+  datefmt: "%Y-%m-%d %H:%M:%S"
+  use_colors: true
+
+commander:
+  timeout: 300
+
+docker:
+  base_url: "unix://var/run/docker.sock"
+  version: "1.43"
+  timeout: 60
